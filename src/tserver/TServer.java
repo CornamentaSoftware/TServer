@@ -41,12 +41,12 @@ public class TServer {
         //Recibe el ticketInicial y lo descifra con la llave secreta que ya conocía
         AES aes = new AES();
         String mensaje2 = aes.Desencriptar(reader2.readLine(), "CFRR");
-
+        System.out.println(mensaje2);
         String ipC="", ipC2="", srvc="", srvc2="";
         
         //Aquí checa qué datos recibió 
         for(int i=0; i<mensaje1.length(); i++){
-            if(mensaje1.charAt(i)==' '){
+            if(mensaje1.charAt(i)=='&'){
                 ipC = mensaje1.substring(0,i);
                 ipC2 = mensaje2.substring(0,i);
                 srvc = mensaje1.substring(i+1);
@@ -55,7 +55,7 @@ public class TServer {
         }
         
         if(ipC.equals(ipC2) && srvc.equals(srvc2)){
-            escritor.println("Correcto " + srvc);
+            escritor.println("Correcto&" + srvc );
             escritor.flush();
             System.out.println("Solicitud respondida");
         }
