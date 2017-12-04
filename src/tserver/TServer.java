@@ -5,11 +5,8 @@
  */
 package tserver;
 import Encriptacion.AES;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.SocketException;
-import java.net.UnknownHostException;
+import java.io.*;
+import java.net.*;
 /**
  *
  * @author Karla
@@ -20,29 +17,31 @@ public class TServer {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws UnknownHostException, SocketException, IOException, Exception{
-       
-        int puertoC= 4000;
+        //Creacion del socket para el cliente
         int miPuerto= 3000;
-        ServerSocket socketC = new ServerSocket(miPuerto);
+        ServerSocket socket1 = new ServerSocket(miPuerto);
         System.out.println("Preparado para aceptar conexion");
-        SocketS socketE = new SocketS(socketC.accept());
+        Socket socketC = socket1.accept();
+        InputStream flujoE = socketC.getInputStream();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(flujoE));
+        OutputStream flujoS = socketC.getOutputStream();
+        PrintWriter escritor = new PrintWriter(new OutputStreamWriter(flujoS));
         System.out.println("Conexion aceptada");
+        String mensaje1 = reader.readLine();
+        System.out.println(mensaje1);
+
         
-        ServerSocket socketC2 = new ServerSocket(2999);
-        SocketS socketR = new SocketS("192.168.9.39", puertoC);
-        //Direccion del cliente
-        
-        ServerSocket socketC3 = new ServerSocket(2998);
-        SocketS socketR2 = new SocketS("192.168.9.160", 5000);
-        //Direccion del servidor de autenticacion
+        //Creacion del socket para el servidor
+        ServerSocket socket2 = new ServerSocket(3500);
+        Socket socketS = socket2.accept();
+        System.out.println("Conexion aceptada con el servidor de autenticacion");
+        InputStream flujoE2 = socketS.getInputStream();
+        BufferedReader reader2 = new BufferedReader(new InputStreamReader(flujoE2));
         
         //Recibe el ticketInicial y lo descifra con la llave secreta que ya conocía
         AES aes = new AES();
-        String mensaje1 = socketR.recibe();
-        socketR.close();
-        System.out.println(mensaje1);
-        String mensaje2 = aes.Desencriptar(socketR2.recibe(), "CFRR");
-        socketR2.close();
+        String mensaje2 = aes.Desencriptar(reader2.readLine(), "CFRR");
+
         String ipC="", ipC2="", srvc="", srvc2="";
         
         //Aquí checa qué datos recibió 
@@ -56,12 +55,10 @@ public class TServer {
         }
         
         if(ipC.equals(ipC2) && srvc.equals(srvc2)){
-            socketE.envia("Correcto " + srvc);
+            escritor.println("Correcto " + srvc);
+            escritor.flush();
             System.out.println("Solicitud respondida");
         }
-        
-        socketR.close();
-        socketE.close();
     }
     
 }
