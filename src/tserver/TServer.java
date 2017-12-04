@@ -55,8 +55,9 @@ public class TServer {
         }
         
         if(ipC.equals(ipC2) && srvc.equals(srvc2)){
-            escritor.println("Correcto&" + srvc );
+            escritor.println(srvc);
             escritor.flush();
+            System.out.println(srvc);
             System.out.println("Solicitud respondida");
         }
     }
